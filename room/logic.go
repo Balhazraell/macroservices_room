@@ -3,8 +3,8 @@ package room
 import (
 	"encoding/json"
 
-	"../../logger"
-	"../../tools"
+	"../logger"
+	"../tools"
 )
 
 // Функция создания карты для комнаты.

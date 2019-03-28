@@ -3,7 +3,7 @@ package room
 import (
 	"fmt"
 
-	"../../logger"
+	"../logger"
 	"github.com/streadway/amqp"
 )
 

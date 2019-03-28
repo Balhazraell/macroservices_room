@@ -3,7 +3,7 @@ package room
 import (
 	"encoding/json"
 
-	"../../logger"
+	"../logger"
 )
 
 type CallbackMessageStruct struct {
