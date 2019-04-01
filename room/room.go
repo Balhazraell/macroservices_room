@@ -2,6 +2,8 @@ package room
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
 
 	"../logger"
 	"github.com/streadway/amqp"
@@ -37,6 +39,9 @@ type room struct {
 // StartNewRoom - метод запуска новой комнаты.
 // На вход подается id комнаты котурую надо создать.
 func StartNewRoom(id int) {
+	// TODO: Временное решение, для запуска как отдельные приложения.
+	rand.Seed(time.Now().UnixNano())
+	id = rand.Intn(100)
 	Room = room{
 		ID:           id,
 		Map:          make(map[int]*chunc),

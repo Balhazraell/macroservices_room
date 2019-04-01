@@ -22,6 +22,7 @@ var (
 )
 
 func InitLogger() bool {
+	// TODO: Логера может не быть!
 	file, err := os.OpenFile("log.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalln("Failed to open or create log file: ", err)

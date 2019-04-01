@@ -63,8 +63,8 @@ func StartRabbitMQ(name string) {
 	queue, err := channel.QueueDeclare(
 		name,  // name
 		true,  // durable
-		false, // delete when usused
-		false, // exclusive
+		true,  // delete when usused
+		true,  // exclusive
 		false, // no-wait
 		nil,   // arguments
 	)
