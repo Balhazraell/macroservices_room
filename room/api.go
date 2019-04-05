@@ -6,10 +6,11 @@ import (
 	"../logger"
 )
 
-type CallbackMessageStruct struct {
-	ServiceID int    `json:"ServiceID"`
-	Status    bool   `json:"Status"`
-	Message   string `json:"Message"`
+// APIMetods - Перечень доступных API методов.
+var APIMetods = map[string]func(string){
+	"ClientConnect":    apiClientConnect,
+	"ClientDisconnect": apiClientDisconnect,
+	"SetChunckState":   apiSetChunckState,
 }
 
 //--------------------- core struct --------------------//
@@ -29,11 +30,10 @@ type SetChunckStateStruct struct {
 	ChunkID  int `json:"ChunkID"`
 }
 
-// APIMetods - Перечень доступных API методов.
-var APIMetods = map[string]func(string){
-	"ClientConnect":    apiClientConnect,
-	"ClientDisconnect": apiClientDisconnect,
-	"SetChunckState":   apiSetChunckState,
+type clientConnectCallbackStruct struct {
+	ClientID int    `json:"ClientID"`
+	Status   bool   `json:"Status"`
+	Message  string `json:"Message"`
 }
 
 func apiClientConnect(data string) {

@@ -75,22 +75,22 @@ func clientConnect(clientID int) {
 
 	var elementIndex = tools.FindElementInArray(Room.clients, clientID)
 
-	var callbackMessage CallbackMessageStruct
+	var callbackMessage clientConnectCallbackStruct
 
 	if elementIndex == -1 {
 		Room.clients = append(Room.clients, clientID)
-		callbackMessage = CallbackMessageStruct{
-			ServiceID: Room.ID,
-			Status:    true,
-			Message:   "",
+		callbackMessage = clientConnectCallbackStruct{
+			ClientID: clientID,
+			Status:   true,
+			Message:  "",
 		}
 
 		updateClientsMap([]int{clientID})
 	} else {
-		callbackMessage = CallbackMessageStruct{
-			ServiceID: Room.ID,
-			Status:    false,
-			Message:   "Пользователь с таким id уже есть!",
+		callbackMessage = clientConnectCallbackStruct{
+			ClientID: clientID,
+			Status:   false,
+			Message:  "Пользователь с таким id уже есть!",
 		}
 	}
 
