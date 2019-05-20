@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"time"
 
-	"../logger"
 	"github.com/streadway/amqp"
+	"github.com/Balhazraell/logger"
 )
 
 // Room - основная структура данных этого пакета.
