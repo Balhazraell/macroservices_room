@@ -4,26 +4,27 @@ import (
 	"os"
 	"os/signal"
 	"sync"
-
-	"./logger"
+	
 	"./room"
+
+	"github.com/Balhazraell/logger"
 )
 
-func WaitForCtrlC() {
-	var end_waiter sync.WaitGroup
-	end_waiter.Add(1)
-	var signal_channel chan os.Signal
-	signal_channel = make(chan os.Signal, 1)
-	signal.Notify(signal_channel, os.Interrupt)
+func waitForCtrlC() {
+	var endWaiter sync.WaitGroup
+	endWaiter.Add(1)
+	var signalChannel chan os.Signal
+	signalChannel = make(chan os.Signal, 1)
+	signal.Notify(signalChannel, os.Interrupt)
 	go func() {
-		<-signal_channel
-		end_waiter.Done()
+		<-signalChannel
+		endWaiter.Done()
 	}()
-	end_waiter.Wait()
+	endWaiter.Wait()
 }
 
 func main() {
 	logger.InitLogger()
 	room.StartNewRoom(0)
-	WaitForCtrlC()
+	waitForCtrlC()
 }
