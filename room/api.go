@@ -3,7 +3,7 @@ package room
 import (
 	"encoding/json"
 
-	"../logger"
+	"github.com/Balhazraell/logger"
 )
 
 // APIMetods - Перечень доступных API методов.
@@ -11,31 +11,34 @@ var APIMetods = map[string]func(string){
 	"ClientConnect":    apiClientConnect,
 	"ClientDisconnect": apiClientDisconnect,
 	"SetChunckState":   apiSetChunckState,
+	"UpdateClientsMap": apiUpdateClientsMap,
 }
 
-//--------------------- core struct --------------------//
-type UpdateMapStruct struct {
-	Map        []byte `json:"Map"`
-	ClientsIDs []int  `json:"ClientsIDs"`
-}
-
-type SendErrorMessageStruct struct {
-	ClientID     int    `json:"ClientID"`
-	ErrorMessage string `json:"ErrorMessage"`
-}
-
-//--------------------- room struct --------------------//
-type SetChunckStateStruct struct {
+// ------------------------------- Incoming Structures -------------------------------
+type setChunckStateStruct struct {
 	ClientID int `json:"ClientID"`
 	ChunkID  int `json:"ChunkID"`
 }
 
+// ------------------------------- Outgoing Structures -------------------------------
+type updateMapStruct struct {
+	Map        []byte `json:"Map"`
+	ClientsIDs []int  `json:"ClientsIDs"`
+}
+
+type sendErrorMessageStruct struct {
+	ClientID     int    `json:"ClientID"`
+	ErrorMessage string `json:"ErrorMessage"`
+}
+
 type clientConnectCallbackStruct struct {
+	RoomID   int    `json:"RoomID"`
 	ClientID int    `json:"ClientID"`
 	Status   bool   `json:"Status"`
 	Message  string `json:"Message"`
 }
 
+//------------------------------- API handling -------------------------------
 func apiClientConnect(data string) {
 	var clientID int
 	err := json.Unmarshal([]byte(data), &clientID)
@@ -59,13 +62,23 @@ func apiClientDisconnect(data string) {
 }
 
 func apiSetChunckState(data string) {
-	var setChunckStateStruct SetChunckStateStruct
-
+	var setChunckStateStruct setChunckStateStruct
 	err := json.Unmarshal([]byte(data), &setChunckStateStruct)
 
 	if err != nil {
 		logger.ErrorPrintf("Ошибка API задании состояния чанку: %s;\n Ошибка в данных: %s", err, data)
 	}
 
-	SetChunckState(setChunckStateStruct.ClientID, setChunckStateStruct.ChunkID)
+	setChunckState(setChunckStateStruct.ClientID, setChunckStateStruct.ChunkID)
+}
+
+func apiUpdateClientsMap(data string) {
+	var clientsIDs []int
+	err := json.Unmarshal([]byte(data), &clientsIDs)
+
+	if err != nil {
+		logger.ErrorPrintf("Ошибка при распаковывании сообщения об обновлении карты: %v", err)
+	}
+
+	updateClientsMap(clientsIDs)
 }

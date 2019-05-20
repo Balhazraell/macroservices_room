@@ -3,11 +3,11 @@ package room
 import (
 	"encoding/json"
 
-	"../logger"
-	"../tools"
+	"github.com/Balhazraell/logger"
+	"github.com/Balhazraell/tools"
 )
 
-// Функция создания карты для комнаты.
+// ------------------- Вспомогательные методы -------------------
 func createMap() {
 	var step = 100
 	var y = 0
@@ -40,6 +40,7 @@ func createMap() {
 	}
 }
 
+//---------------------------------------------------------------
 func updateClientsMap(clientsIDs []int) {
 	logger.InfoPrint("Обновление карт пользователей.")
 	gameMap, err := json.Marshal(Room.Map)
@@ -49,7 +50,7 @@ func updateClientsMap(clientsIDs []int) {
 		return
 	}
 
-	updateMap := UpdateMapStruct{
+	updateMap := updateMapStruct{
 		Map:        gameMap,
 		ClientsIDs: clientsIDs,
 	}
@@ -69,17 +70,16 @@ func updateClientsMap(clientsIDs []int) {
 	PublishMessage(newMessage)
 }
 
-//--------------------- Обработка API -----------------------//
 func clientConnect(clientID int) {
 	logger.InfoPrintf("К комнате %v подключился новый клиент с id=%v.", Room.ID, clientID)
 
 	var elementIndex = tools.FindElementInArray(Room.clients, clientID)
-
 	var callbackMessage clientConnectCallbackStruct
 
 	if elementIndex == -1 {
 		Room.clients = append(Room.clients, clientID)
 		callbackMessage = clientConnectCallbackStruct{
+			RoomID:   Room.ID,
 			ClientID: clientID,
 			Status:   true,
 			Message:  "",
@@ -88,6 +88,7 @@ func clientConnect(clientID int) {
 		updateClientsMap([]int{clientID})
 	} else {
 		callbackMessage = clientConnectCallbackStruct{
+			RoomID:   Room.ID,
 			ClientID: clientID,
 			Status:   false,
 			Message:  "Пользователь с таким id уже есть!",
@@ -108,8 +109,7 @@ func clientDisconnect(clientID int) {
 	}
 }
 
-// SetChunckState - Метод вызываемый при попытке пользователя что-то сделать с участком карты.
-func SetChunckState(clientID int, chunkID int) {
+func setChunckState(clientID int, chunkID int) {
 	if Room.Map[chunkID].State == ChuncStateEmpty {
 		Room.Map[chunkID].State = Room.GameState
 
@@ -123,7 +123,7 @@ func SetChunckState(clientID int, chunkID int) {
 	} else {
 		logger.WarningPrintf("Попытка изменить значение в поле с изменненым значеним клиентом с id=%v.", clientID)
 		//TODO: надо справочник ошибок с кодами ошибок и в коде работать только с кодами ошибок.
-		sendErrorMessageStruct := SendErrorMessageStruct{
+		sendErrorMessageStruct := sendErrorMessageStruct{
 			ClientID:     clientID,
 			ErrorMessage: "Нельзя изменить значение!",
 		}
