@@ -38,7 +38,18 @@ type sendErrorMessageStruct struct {
 	ErrorMessage string `json:"ErrorMessage"`
 }
 
-//------------------------------- API handling -------------------------------
+//--------------------- room struct --------------------//
+type SetChunckStateStruct struct {
+	ClientID int `json:"ClientID"`
+	ChunkID  int `json:"ChunkID"`
+}
+
+type clientConnectCallbackStruct struct {
+	ClientID int    `json:"ClientID"`
+	Status   bool   `json:"Status"`
+	Message  string `json:"Message"`
+}
+
 func apiClientConnect(data string) {
 	var clientID int
 	err := json.Unmarshal([]byte(data), &clientID)
