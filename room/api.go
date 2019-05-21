@@ -44,12 +44,6 @@ type SetChunckStateStruct struct {
 	ChunkID  int `json:"ChunkID"`
 }
 
-type clientConnectCallbackStruct struct {
-	ClientID int    `json:"ClientID"`
-	Status   bool   `json:"Status"`
-	Message  string `json:"Message"`
-}
-
 func apiClientConnect(data string) {
 	var clientID int
 	err := json.Unmarshal([]byte(data), &clientID)
