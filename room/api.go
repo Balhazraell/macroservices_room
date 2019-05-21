@@ -14,6 +14,13 @@ var APIMetods = map[string]func(string){
 	"UpdateClientsMap": apiUpdateClientsMap,
 }
 
+type callbackStruct struct{
+	RoomID int `json:"RoomID"`
+	ClientID int `json:"ClientID"`
+	Status bool `json:"Status"`
+	Message string `json:"Message"`
+}
+
 // ------------------------------- Incoming Structures -------------------------------
 type setChunckStateStruct struct {
 	ClientID int `json:"ClientID"`
@@ -29,13 +36,6 @@ type updateMapStruct struct {
 type sendErrorMessageStruct struct {
 	ClientID     int    `json:"ClientID"`
 	ErrorMessage string `json:"ErrorMessage"`
-}
-
-type clientConnectCallbackStruct struct {
-	RoomID   int    `json:"RoomID"`
-	ClientID int    `json:"ClientID"`
-	Status   bool   `json:"Status"`
-	Message  string `json:"Message"`
 }
 
 //------------------------------- API handling -------------------------------

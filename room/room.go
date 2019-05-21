@@ -26,6 +26,7 @@ type room struct {
 
 	// Переменные логики.
 	GameState int // Делаем крестики нолики, по этому 2 состояния - ходит один потом другой.
+	lastMovedUser int // Пользователь последний сделавший ход.
 
 	// Каналы
 	shutdownLoop chan bool

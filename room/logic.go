@@ -70,47 +70,89 @@ func updateClientsMap(clientsIDs []int) {
 	PublishMessage(newMessage)
 }
 
-func clientConnect(clientID int) {
+//------------------------- Client Connect -------------------------//
+
+func clientConnect(clientID int){
 	logger.InfoPrintf("К комнате %v подключился новый клиент с id=%v.", Room.ID, clientID)
 
-	var elementIndex = tools.FindElementInArray(Room.clients, clientID)
-	var callbackMessage clientConnectCallbackStruct
-
-	if elementIndex == -1 {
-		Room.clients = append(Room.clients, clientID)
-		callbackMessage = clientConnectCallbackStruct{
-			RoomID:   Room.ID,
-			ClientID: clientID,
-			Status:   true,
-			Message:  "",
-		}
-
-		updateClientsMap([]int{clientID})
-	} else {
-		callbackMessage = clientConnectCallbackStruct{
-			RoomID:   Room.ID,
-			ClientID: clientID,
-			Status:   false,
-			Message:  "Пользователь с таким id уже есть!",
-		}
+	status, message := validateClientConnect(clientID)
+	callbackMessage := callbackStruct{
+		RoomID:   Room.ID,
+		ClientID: clientID,
+		Status:   status,
+		Message:  message,
 	}
 
 	CreateMessage(callbackMessage, "ClientConnectCallback")
-}
 
-func clientDisconnect(clientID int) {
-	var clientIndex = tools.FindElementInArray(Room.clients, clientID)
-
-	if clientIndex != -1 {
-		logger.InfoPrintf("Удаляем клиента id=%v из комнаты id=%v.", clientID, Room.ID)
-		Room.clients = tools.DeleElementFromArraByIndex(Room.clients, clientIndex)
-	} else {
-		logger.WarningPrintf("Попытка удалить клиента из комнаты, корого нет: id=%v.", clientID)
+	if status {
+		updateClientsMap([]int{clientID})
 	}
 }
 
+func validateClientConnect(clientID int) (bool, string){
+	status := true
+	message := ""
+
+	// Проверка идентификатора на существование.
+	var elementIndex = tools.FindElementInArray(Room.clients, clientID)
+	if elementIndex != -1 {
+		logger.WarningPrintf("Попытка подключения пользователя, идентификатор которого уже есть: room_id:%v user_id:%v.", Room.ID, clientID)
+		status = false
+		message = "Пользователь с таким id уже есть!"
+		return status, message
+	}
+
+	return status, message
+}
+
+//------------------------- Client Disconnect -------------------------//
+
+func clientDisconnect(clientID int){
+	status, message := validateClientConnect(clientID)
+	callbackMessage := callbackStruct{
+		RoomID:   Room.ID,
+		ClientID: clientID,
+		Status:   status,
+		Message:  message,
+	}
+
+	CreateMessage(callbackMessage, "ClientDisconnectCallback")
+
+	if status {
+		Room.clients = tools.DeleElementFromArraByIndex(Room.clients, clientID)
+	}
+}
+
+func validateClientDisconnect(clientID int) (bool, string){
+	status := true
+	message := ""
+
+	// Проверка идентификатора на существование.
+	var elementIndex = tools.FindElementInArray(Room.clients, clientID)
+	if elementIndex == -1 {
+		logger.WarningPrintf("Попытка отключиться пользователя, которого нет в списке пользователей: room_id:%v user_id:%v.", Room.ID, clientID)
+		status = false
+		message = "Пользователь с таким id не существует!"
+		return status, message
+	}
+
+	return status, message
+}
+
+//------------------------- Set Chunck State -------------------------//
 func setChunckState(clientID int, chunkID int) {
-	if Room.Map[chunkID].State == ChuncStateEmpty {
+	status, message := validatorSetChunckState(clientID, chunkID)
+	callbackMessage := callbackStruct{
+		RoomID:   Room.ID,
+		ClientID: clientID,
+		Status:   status,
+		Message:  message,
+	}
+
+	CreateMessage(callbackMessage, "SetChunckStateCallback")
+
+	if status {
 		Room.Map[chunkID].State = Room.GameState
 
 		if Room.GameState == ChuncStateCross {
@@ -120,14 +162,27 @@ func setChunckState(clientID int, chunkID int) {
 		}
 
 		updateClientsMap(Room.clients)
-	} else {
-		logger.WarningPrintf("Попытка изменить значение в поле с изменненым значеним клиентом с id=%v.", clientID)
-		//TODO: надо справочник ошибок с кодами ошибок и в коде работать только с кодами ошибок.
-		sendErrorMessageStruct := sendErrorMessageStruct{
-			ClientID:     clientID,
-			ErrorMessage: "Нельзя изменить значение!",
-		}
-
-		CreateMessage(sendErrorMessageStruct, "SendErrorMessage")
 	}
+}
+
+func validatorSetChunckState(clientID int, chunkID int) (bool, string){
+	status := true
+	message := ""
+
+	// Проверка на повторное изменение клетки.
+	if Room.Map[chunkID].State != ChuncStateEmpty {
+		logger.WarningPrintf("Попытка задать значение в поле с заданным значением: room_id:%v user_id:%v.", Room.ID, clientID)
+		status = false
+		message = "Значение клетки уже задано.\nПовторно изменить нельзя!"
+		return status, message
+	}
+
+	if Room.lastMovedUser == clientID{
+		logger.WarningPrintf("Попытка повторного хода игрока: room_id:%v user_id:%v.", Room.ID, clientID)
+		status = false
+		message = "Сейчас ход другого игрока."
+		return status, message
+	}
+
+	return status, message
 }
