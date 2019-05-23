@@ -1,9 +1,25 @@
 package room
 
 import (
+	"fmt"
+
 	"github.com/Balhazraell/logger"
 	"github.com/Balhazraell/tools"
 )
+
+func validateAPIcall(handlerName string) (bool, string){
+	status := true
+	message := ""
+
+	_, ok := APIMetods[handlerName]
+	if !ok {
+		logger.WarningPrintf("Попытка вызвать API которго нет или к которому нет доступа: %v.", handlerName)
+		status = false
+		message = fmt.Sprintf("API метода %v в комнате room_id:%v не существует.", handlerName, Room.ID)
+	}
+
+	return status, message
+}
 
 func validateClientConnect(userID int) (bool, string){
 	status := true

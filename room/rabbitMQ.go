@@ -108,12 +108,19 @@ func StartRabbitMQ(name string) {
 			} else {
 				// TODO: можем упасть при вызове не верного метода - надо обработать!
 				// Допустим метод которого нет в списке.
-				method, ok := APIMetods[msg.HandlerName]
-				if ok {
-					method(msg.Data)
+				status, message := validateAPIcall(msg.HandlerName)
+				
+				if status {
+					APIMetods[msg.HandlerName](msg.Data)
 				} else {
-					logger.WarningPrintf("Попытка вызвать API которго нет или к которому нет доступа: %v.", msg.HandlerName)
-					continue
+					callbackMessage := callbackStruct{
+						RoomID:	Room.ID,
+						UserID:  -1,
+						Status:   status,
+						Message:  message,
+					}
+
+					CreateMessage(callbackMessage, "APICallCallback")
 				}
 			}
 		}
