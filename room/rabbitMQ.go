@@ -120,7 +120,7 @@ func StartRabbitMQ(name string) {
 	}()
 }
 
-// CreateMessage - Запаковывает структуру для отправки.
+// CreateMessage - Запаковывает структуру для отправки и сразу публикует сообщение.
 func CreateMessage(data interface{}, methodName string) {
 	message, err := json.Marshal(data)
 	if err != nil {

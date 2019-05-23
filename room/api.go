@@ -16,14 +16,14 @@ var APIMetods = map[string]func(string){
 
 type callbackStruct struct{
 	RoomID int `json:"RoomID"`
-	ClientID int `json:"ClientID"`
+	UserID int `json:"UserID"`
 	Status bool `json:"Status"`
 	Message string `json:"Message"`
 }
 
 // ------------------------------- Incoming Structures -------------------------------
 type setChunckStateStruct struct {
-	ClientID int `json:"ClientID"`
+	UserID int `json:"UserID"`
 	ChunkID  int `json:"ChunkID"`
 }
 
@@ -34,36 +34,60 @@ type updateMapStruct struct {
 }
 
 type sendErrorMessageStruct struct {
-	ClientID     int    `json:"ClientID"`
+	UserID     int    `json:"UserID"`
 	ErrorMessage string `json:"ErrorMessage"`
 }
 
 //--------------------- room struct --------------------//
 type SetChunckStateStruct struct {
-	ClientID int `json:"ClientID"`
+	UserID int `json:"UserID"`
 	ChunkID  int `json:"ChunkID"`
 }
 
 func apiClientConnect(data string) {
-	var clientID int
-	err := json.Unmarshal([]byte(data), &clientID)
+	var userID int
+	err := json.Unmarshal([]byte(data), &userID)
 
 	if err != nil {
-		logger.ErrorPrintf("Ошибка API при подключении нового клиента: %s;\n Ошибка в данных: %s", err, data)
+		logger.ErrorPrintf("Ошибка распаковки JSON: \nОшибка: %v \nДанные: %v", err, data)
 	}
 
-	clientConnect(clientID)
+	status, message := validateClientConnect(userID)
+	callbackMessage := callbackStruct{
+		RoomID:   Room.ID,
+		UserID: userID,
+		Status:   status,
+		Message:  message,
+	}
+
+	CreateMessage(callbackMessage, "ClientConnectCallback")
+
+	if status {
+		clientConnect(userID)
+	}
 }
 
 func apiClientDisconnect(data string) {
-	var clientID int
-	err := json.Unmarshal([]byte(data), &clientID)
+	var userID int
+	err := json.Unmarshal([]byte(data), &userID)
 
 	if err != nil {
-		logger.ErrorPrintf("Ошибка API при отключении клиента: %s;\n Ошибка в данных: %s", err, data)
+		logger.ErrorPrintf("Ошибка распаковки JSON: \nОшибка: %v \nДанные: %v", err, data)
 	}
 
-	clientDisconnect(clientID)
+	status, message := validateClientDisconnect(userID)
+	callbackMessage := callbackStruct{
+		RoomID:   Room.ID,
+		UserID: userID,
+		Status:   status,
+		Message:  message,
+	}
+
+	CreateMessage(callbackMessage, "ClientDisconnectCallback")
+
+	if status {
+		clientDisconnect(userID)
+	}
 }
 
 func apiSetChunckState(data string) {
@@ -71,19 +95,53 @@ func apiSetChunckState(data string) {
 	err := json.Unmarshal([]byte(data), &setChunckStateStruct)
 
 	if err != nil {
-		logger.ErrorPrintf("Ошибка API задании состояния чанку: %s;\n Ошибка в данных: %s", err, data)
+		logger.ErrorPrintf("Ошибка распаковки JSON: \nОшибка: %v \nДанные: %v", err, data)
 	}
 
-	setChunckState(setChunckStateStruct.ClientID, setChunckStateStruct.ChunkID)
+	userID := setChunckStateStruct.UserID
+	chunkID := setChunckStateStruct.ChunkID
+
+	status, message := validateSetChunckState(userID, chunkID)
+	callbackMessage := callbackStruct{
+		RoomID:   Room.ID,
+		UserID: userID,
+		Status:   status,
+		Message:  message,
+	}
+
+	CreateMessage(callbackMessage, "SetChunckStateCallback")
+
+	if status {
+		setChunckState(userID, chunkID)
+	}
 }
 
 func apiUpdateClientsMap(data string) {
 	var clientsIDs []int
+	var clientsIDsToUpdate []int
 	err := json.Unmarshal([]byte(data), &clientsIDs)
 
 	if err != nil {
-		logger.ErrorPrintf("Ошибка при распаковывании сообщения об обновлении карты: %v", err)
+		logger.ErrorPrintf("Ошибка распаковки JSON: \nОшибка: %v \nДанные: %v", err, data)
 	}
 
-	updateClientsMap(clientsIDs)
+	for _, userID := range clientsIDs {
+		status, message := validateUpdateClientsMap(userID)
+		callbackMessage := callbackStruct{
+			RoomID:   Room.ID,
+			UserID: userID,
+			Status:   status,
+			Message:  message,
+		}
+
+		CreateMessage(callbackMessage, "UpdateClientsMapCallback")
+
+		if status {
+			clientsIDsToUpdate = append(clientsIDsToUpdate, userID)
+		}
+	}
+
+	if len(clientsIDsToUpdate) > 0 {
+		updateClientsMap(clientsIDsToUpdate)
+	}
 }
