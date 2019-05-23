@@ -38,12 +38,6 @@ type sendErrorMessageStruct struct {
 	ErrorMessage string `json:"ErrorMessage"`
 }
 
-//--------------------- room struct --------------------//
-type SetChunckStateStruct struct {
-	UserID int `json:"UserID"`
-	ChunkID  int `json:"ChunkID"`
-}
-
 func apiClientConnect(data string) {
 	var userID int
 	err := json.Unmarshal([]byte(data), &userID)
