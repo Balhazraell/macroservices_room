@@ -14,13 +14,6 @@ var APIMetods = map[string]func(string){
 	"UpdateClientsMap": apiUpdateClientsMap,
 }
 
-type callbackStruct struct{
-	RoomID int `json:"RoomID"`
-	UserID int `json:"UserID"`
-	Status bool `json:"Status"`
-	Message string `json:"Message"`
-}
-
 // ------------------------------- Incoming Structures -------------------------------
 type setChunckStateStruct struct {
 	UserID int `json:"UserID"`

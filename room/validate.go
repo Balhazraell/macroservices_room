@@ -11,7 +11,7 @@ func validateAPIcall(handlerName string) (bool, string){
 	status := true
 	message := ""
 
-	_, ok := APIMetods[handlerName]
+	_, ok := APIandCallbackMetods[handlerName]
 	if !ok {
 		logger.WarningPrintf("Попытка вызвать API которго нет или к которому нет доступа: %v.", handlerName)
 		status = false
