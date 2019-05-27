@@ -69,12 +69,12 @@ func updateClientsMap(clientsIDs []int) {
 	PublishMessage(newMessage)
 }
 
-func clientConnect(clientID int){
+func clientConnect(clientID int) {
 	logger.InfoPrintf("В комнату room_id:%v вошел новый пользователь user_id=%v.", Room.ID, clientID)
 	updateClientsMap([]int{clientID})
 }
 
-func clientDisconnect(clientID int){
+func clientDisconnect(clientID int) {
 	logger.InfoPrintf("Комнату room_id:%v покидает пользователь user_id=%v.", Room.ID, clientID)
 	Room.clients = tools.DeleElementFromArraByIndex(Room.clients, clientID)
 }

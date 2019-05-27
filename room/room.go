@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/streadway/amqp"
 	"github.com/Balhazraell/logger"
+	"github.com/streadway/amqp"
 )
 
 // Room - основная структура данных этого пакета.
@@ -25,7 +25,7 @@ type room struct {
 	channel *amqp.Channel
 
 	// Переменные логики.
-	GameState int // Делаем крестики нолики, по этому 2 состояния - ходит один потом другой.
+	GameState     int // Делаем крестики нолики, по этому 2 состояния - ходит один потом другой.
 	lastMovedUser int // Пользователь последний сделавший ход.
 
 	// Каналы

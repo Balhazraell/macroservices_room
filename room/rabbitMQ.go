@@ -113,15 +113,15 @@ func StartRabbitMQ(name string) {
 				// TODO: можем упасть при вызове не верного метода - надо обработать!
 				// Допустим метод которого нет в списке.
 				status, message := validateAPIcall(msg.HandlerName)
-				
+
 				if status {
 					APIandCallbackMetods[msg.HandlerName](msg.Data)
 				} else {
 					callbackMessage := callbackStruct{
-						RoomID:	Room.ID,
+						RoomID:  Room.ID,
 						UserID:  -1,
-						Status:   status,
-						Message:  message,
+						Status:  status,
+						Message: message,
 					}
 
 					CreateMessage(callbackMessage, "APICallCallback")
@@ -166,9 +166,9 @@ func PublishMessage(message MessageRMQ) {
 	checkError(err, "Failed to publish a message")
 }
 
-func fillMetods() map[string]func(string){
+func fillMetods() map[string]func(string) {
 	result := APIMetods
-	for key, value := range CallbackMetods{
+	for key, value := range CallbackMetods {
 		result[key] = value
 	}
 

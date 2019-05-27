@@ -16,8 +16,8 @@ var APIMetods = map[string]func(string){
 
 // ------------------------------- Incoming Structures -------------------------------
 type setChunckStateStruct struct {
-	UserID int `json:"UserID"`
-	ChunkID  int `json:"ChunkID"`
+	UserID  int `json:"UserID"`
+	ChunkID int `json:"ChunkID"`
 }
 
 // ------------------------------- Outgoing Structures -------------------------------
@@ -27,7 +27,7 @@ type updateMapStruct struct {
 }
 
 type sendErrorMessageStruct struct {
-	UserID     int    `json:"UserID"`
+	UserID       int    `json:"UserID"`
 	ErrorMessage string `json:"ErrorMessage"`
 }
 
@@ -41,10 +41,10 @@ func apiClientConnect(data string) {
 
 	status, message := validateClientConnect(userID)
 	callbackMessage := callbackStruct{
-		RoomID:   Room.ID,
-		UserID: userID,
-		Status:   status,
-		Message:  message,
+		RoomID:  Room.ID,
+		UserID:  userID,
+		Status:  status,
+		Message: message,
 	}
 
 	CreateMessage(callbackMessage, "ClientConnectCallback")
@@ -64,10 +64,10 @@ func apiClientDisconnect(data string) {
 
 	status, message := validateClientDisconnect(userID)
 	callbackMessage := callbackStruct{
-		RoomID:   Room.ID,
-		UserID: userID,
-		Status:   status,
-		Message:  message,
+		RoomID:  Room.ID,
+		UserID:  userID,
+		Status:  status,
+		Message: message,
 	}
 
 	CreateMessage(callbackMessage, "ClientDisconnectCallback")
@@ -90,10 +90,10 @@ func apiSetChunckState(data string) {
 
 	status, message := validateSetChunckState(userID, chunkID)
 	callbackMessage := callbackStruct{
-		RoomID:   Room.ID,
-		UserID: userID,
-		Status:   status,
-		Message:  message,
+		RoomID:  Room.ID,
+		UserID:  userID,
+		Status:  status,
+		Message: message,
 	}
 
 	CreateMessage(callbackMessage, "SetChunckStateCallback")
@@ -115,10 +115,10 @@ func apiUpdateClientsMap(data string) {
 	for _, userID := range clientsIDs {
 		status, message := validateUpdateClientsMap(userID)
 		callbackMessage := callbackStruct{
-			RoomID:   Room.ID,
-			UserID: userID,
-			Status:   status,
-			Message:  message,
+			RoomID:  Room.ID,
+			UserID:  userID,
+			Status:  status,
+			Message: message,
 		}
 
 		CreateMessage(callbackMessage, "UpdateClientsMapCallback")

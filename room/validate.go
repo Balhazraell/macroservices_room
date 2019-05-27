@@ -7,7 +7,7 @@ import (
 	"github.com/Balhazraell/tools"
 )
 
-func validateAPIcall(handlerName string) (bool, string){
+func validateAPIcall(handlerName string) (bool, string) {
 	status := true
 	message := ""
 
@@ -21,7 +21,7 @@ func validateAPIcall(handlerName string) (bool, string){
 	return status, message
 }
 
-func validateClientConnect(userID int) (bool, string){
+func validateClientConnect(userID int) (bool, string) {
 	status := true
 	message := ""
 
@@ -37,7 +37,7 @@ func validateClientConnect(userID int) (bool, string){
 	return status, message
 }
 
-func validateClientDisconnect(userID int) (bool, string){
+func validateClientDisconnect(userID int) (bool, string) {
 	status := true
 	message := ""
 
@@ -53,7 +53,7 @@ func validateClientDisconnect(userID int) (bool, string){
 	return status, message
 }
 
-func validateSetChunckState(userID int, chunkID int) (bool, string){
+func validateSetChunckState(userID int, chunkID int) (bool, string) {
 	status := true
 	message := ""
 
@@ -65,7 +65,7 @@ func validateSetChunckState(userID int, chunkID int) (bool, string){
 		return status, message
 	}
 
-	if Room.lastMovedUser == userID{
+	if Room.lastMovedUser == userID {
 		logger.WarningPrintf("Попытка повторного хода игрока: room_id:%v user_id:%v.", Room.ID, userID)
 		status = false
 		message = "Сейчас ход другого игрока."
@@ -75,7 +75,7 @@ func validateSetChunckState(userID int, chunkID int) (bool, string){
 	return status, message
 }
 
-func validateUpdateClientsMap(userID int) (bool, string){
+func validateUpdateClientsMap(userID int) (bool, string) {
 	status := true
 	message := ""
 

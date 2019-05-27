@@ -6,10 +6,10 @@ import (
 	"github.com/Balhazraell/logger"
 )
 
-type callbackStruct struct{
-	RoomID int `json:"RoomID"`
-	UserID int `json:"UserID"`
-	Status bool `json:"Status"`
+type callbackStruct struct {
+	RoomID  int    `json:"RoomID"`
+	UserID  int    `json:"UserID"`
+	Status  bool   `json:"Status"`
 	Message string `json:"Message"`
 }
 
@@ -18,7 +18,7 @@ var CallbackMetods = map[string]func(string){
 	"СallbackAPICall": сallbackAPICall,
 }
 
-func сallbackAPICall(data string){
+func сallbackAPICall(data string) {
 	var callback = callbackStruct{}
 	err := json.Unmarshal([]byte(data), &callback)
 
