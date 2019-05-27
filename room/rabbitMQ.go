@@ -10,8 +10,13 @@ import (
 
 // MessageRMQ - Формат сообщений для обмена по RabbitMQ
 type MessageRMQ struct {
+	Meta MessageRMQMeta `json:"message_rmq_meta"`
+	Data string         `json:"data"`
+}
+
+type MessageRMQMeta struct {
 	HandlerName string `json:"handler_name"`
-	Data        string `json:"data"`
+	RoomID      int    `json:"room_id"`
 }
 
 func checkError(err error, message string) {
@@ -107,12 +112,10 @@ func StartRabbitMQ(name string) {
 				logger.ErrorPrintf("Проблема чтения сообщения от комнаты : %v.", err)
 				continue
 			} else {
-				// TODO: можем упасть при вызове не верного метода - надо обработать!
-				// Допустим метод которого нет в списке.
-				status, message := validateAPIcall(msg.HandlerName)
+				status, message := validateAPIcall(msg.Meta.HandlerName)
 
 				if status {
-					Room.APIandCallbackMetods[msg.HandlerName](msg.Data)
+					Room.APIandCallbackMetods[msg.Meta.HandlerName](msg.Data)
 				} else {
 					callbackMessage := callbackStruct{
 						RoomID:  Room.ID,
@@ -136,9 +139,14 @@ func CreateMessage(data interface{}, methodName string) {
 		return
 	}
 
-	messageRMQ := MessageRMQ{
+	meta := MessageRMQMeta{
 		HandlerName: methodName,
-		Data:        string(message),
+		RoomID:      Room.ID,
+	}
+
+	messageRMQ := MessageRMQ{
+		Meta: meta,
+		Data: string(message),
 	}
 
 	PublishMessage(messageRMQ)
