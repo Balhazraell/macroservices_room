@@ -8,8 +8,6 @@ import (
 	"github.com/streadway/amqp"
 )
 
-var APIandCallbackMetods map[string]func(string)
-
 // MessageRMQ - Формат сообщений для обмена по RabbitMQ
 type MessageRMQ struct {
 	HandlerName string `json:"handler_name"`
@@ -25,7 +23,6 @@ func checkError(err error, message string) {
 // StartRabbitMQ - Запускает создание очередей в RabbitMQ
 func StartRabbitMQ(name string) {
 	//---------------------------- Overall ----------------------------
-	APIandCallbackMetods = fillMetods()
 
 	// Сейчас создадим полноценное соединение для RabbitMQ
 	conn, err := amqp.Dial("amqp://macroserv:12345@localhost:5672/macroserv")
@@ -115,7 +112,7 @@ func StartRabbitMQ(name string) {
 				status, message := validateAPIcall(msg.HandlerName)
 
 				if status {
-					APIandCallbackMetods[msg.HandlerName](msg.Data)
+					Room.APIandCallbackMetods[msg.HandlerName](msg.Data)
 				} else {
 					callbackMessage := callbackStruct{
 						RoomID:  Room.ID,
@@ -164,13 +161,4 @@ func PublishMessage(message MessageRMQ) {
 		})
 
 	checkError(err, "Failed to publish a message")
-}
-
-func fillMetods() map[string]func(string) {
-	result := APIMetods
-	for key, value := range CallbackMetods {
-		result[key] = value
-	}
-
-	return result
 }

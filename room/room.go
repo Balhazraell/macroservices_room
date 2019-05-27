@@ -33,8 +33,9 @@ type room struct {
 	updateMap    chan bool
 
 	//--- RabbitMQ
-	connectRMQ *amqp.Connection
-	channelRMQ *amqp.Channel
+	APIandCallbackMetods map[string]func(string)
+	connectRMQ           *amqp.Connection
+	channelRMQ           *amqp.Channel
 }
 
 // StartNewRoom - метод запуска новой комнаты.
@@ -44,14 +45,14 @@ func StartNewRoom(id int) {
 	rand.Seed(time.Now().UnixNano())
 	id = rand.Intn(100)
 	Room = room{
-		ID:           id,
-		Map:          make(map[int]*chunc),
-		shutdownLoop: make(chan bool),
-		updateMap:    make(chan bool),
+		ID:                   id,
+		Map:                  make(map[int]*chunc),
+		shutdownLoop:         make(chan bool),
+		updateMap:            make(chan bool),
+		APIandCallbackMetods: fillMetods(),
 	}
 
 	createMap()
-
 	logger.InfoPrintf("Комната с именем %v начала свою работу", fmt.Sprintf("room_%v", id))
 
 	StartRabbitMQ(fmt.Sprintf("room_%v", id))
@@ -90,4 +91,13 @@ func (r *room) loop() {
 			updateClientsMap(Room.clients)
 		}
 	}
+}
+
+func fillMetods() map[string]func(string) {
+	result := APIMetods
+	for key, value := range CallbackMetods {
+		result[key] = value
+	}
+
+	return result
 }
