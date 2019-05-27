@@ -61,12 +61,7 @@ func updateClientsMap(clientsIDs []int) {
 		return
 	}
 
-	newMessage := MessageRMQ{
-		HandlerName: "UpdateClientsMap",
-		Data:        string(data),
-	}
-
-	PublishMessage(newMessage)
+	CreateMessage(data, "UpdateClientsMap")
 }
 
 func clientConnect(clientID int) {

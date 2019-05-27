@@ -47,7 +47,7 @@ func apiClientConnect(data string) {
 		Message: message,
 	}
 
-	CreateMessage(callbackMessage, "ClientConnectCallback")
+	CreateMessage(callbackMessage, "CallbackClientConnect")
 
 	if status {
 		clientConnect(userID)
@@ -70,7 +70,7 @@ func apiClientDisconnect(data string) {
 		Message: message,
 	}
 
-	CreateMessage(callbackMessage, "ClientDisconnectCallback")
+	CreateMessage(callbackMessage, "CallbackClientDisconnect")
 
 	if status {
 		clientDisconnect(userID)
@@ -96,7 +96,7 @@ func apiSetChunckState(data string) {
 		Message: message,
 	}
 
-	CreateMessage(callbackMessage, "SetChunckStateCallback")
+	CreateMessage(callbackMessage, "CallbackSetChunckState")
 
 	if status {
 		setChunckState(userID, chunkID)
@@ -121,7 +121,7 @@ func apiUpdateClientsMap(data string) {
 			Message: message,
 		}
 
-		CreateMessage(callbackMessage, "UpdateClientsMapCallback")
+		CreateMessage(callbackMessage, "CallbackUpdateClientsMap")
 
 		if status {
 			clientsIDsToUpdate = append(clientsIDsToUpdate, userID)
