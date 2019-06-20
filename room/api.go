@@ -78,15 +78,15 @@ func apiClientDisconnect(data string) {
 }
 
 func apiSetChunckState(data string) {
-	var setChunckStateStruct setChunckStateStruct
-	err := json.Unmarshal([]byte(data), &setChunckStateStruct)
+	var сhunckState setChunckStateStruct
+	err := json.Unmarshal([]byte(data), &сhunckState)
 
 	if err != nil {
 		logger.ErrorPrintf("Ошибка распаковки JSON: \nОшибка: %v \nДанные: %v", err, data)
 	}
 
-	userID := setChunckStateStruct.UserID
-	chunkID := setChunckStateStruct.ChunkID
+	userID := сhunckState.UserID
+	chunkID := сhunckState.ChunkID
 
 	status, message := validateSetChunckState(userID, chunkID)
 	callbackMessage := callbackStruct{

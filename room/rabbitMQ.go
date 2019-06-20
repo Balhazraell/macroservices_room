@@ -124,7 +124,7 @@ func StartRabbitMQ(name string) {
 						Message: message,
 					}
 
-					CreateMessage(callbackMessage, "APICallCallback")
+					CreateMessage(callbackMessage, "СallbackAPICall")
 				}
 			}
 		}

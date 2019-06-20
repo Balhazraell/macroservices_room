@@ -71,7 +71,8 @@ func clientConnect(clientID int) {
 
 func clientDisconnect(clientID int) {
 	logger.InfoPrintf("Комнату room_id:%v покидает пользователь user_id=%v.", Room.ID, clientID)
-	Room.clients = tools.DeleElementFromArraByIndex(Room.clients, clientID)
+	clientIDPosition := tools.FindElementInArray(Room.clients, clientID)
+	Room.clients = tools.DeleElementFromArraByIndex(Room.clients, clientIDPosition)
 }
 
 func setChunckState(clientID int, chunkID int) {

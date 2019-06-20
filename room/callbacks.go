@@ -15,7 +15,10 @@ type callbackStruct struct {
 
 // CallbackMetods - Перечень методов для получения ответов при запросах.
 var CallbackMetods = map[string]func(string){
-	"СallbackAPICall": сallbackAPICall,
+	"СallbackAPICall":          сallbackAPICall,
+	"CallbackRoomConnect":      callbackRoomConnect,
+	"CallbackUpdateClientsMap": callbackUpdateClientsMap,
+	"CallbackSendErrorMessage": callbackSendErrorMessage,
 }
 
 func сallbackAPICall(data string) {
@@ -23,10 +26,41 @@ func сallbackAPICall(data string) {
 	err := json.Unmarshal([]byte(data), &callback)
 
 	if err != nil {
-		logger.ErrorPrintf("Ошибка распаковки JSON: \nОшибка: %v \nДанные: %v", err, data)
+		logger.WarningPrintf("Ошибка распаковки JSON: \nОшибка: %v \nДанные: %v", err, data)
 	}
 
 	if !callback.Status {
-		logger.ErrorPrintf("Ошибка вызова API метода: \n%v", callback.Message)
+		logger.WarningPrintf("Ошибка вызова API метода: \n%v", callback.Message)
 	}
+}
+
+func callbackRoomConnect(data string) {
+	var callback = callbackStruct{}
+	err := json.Unmarshal([]byte(data), &callback)
+
+	if err != nil {
+		logger.WarningPrintf("Ошибка распаковки JSON: \nОшибка: %v \nДанные: %v", err, data)
+	}
+
+	if !callback.Status {
+		// callbackRoomConnect() - нужно перегенерить id. (не забываем про закрытие канала и открытие нового.)
+	}
+}
+
+func callbackUpdateClientsMap(data string) {
+	var callback = callbackStruct{}
+	err := json.Unmarshal([]byte(data), &callback)
+
+	if err != nil {
+		logger.WarningPrintf("Ошибка распаковки JSON: \nОшибка: %v \nДанные: %v", err, data)
+	}
+
+	if !callback.Status {
+		logger.WarningPrintf("Произошла ошибка при обновлении карты пользователя с \nid: %v \nerror: %v", callback.UserID, callback.Message)
+		clientDisconnect(callback.UserID)
+	}
+}
+
+func callbackSendErrorMessage(data string) {
+	
 }
